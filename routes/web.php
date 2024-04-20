@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\News;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,5 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    $currentDate = now();
+    $news = News::where("Date_expiration", ">", $currentDate)->orderBy('id', 'desc')->get();
+    return $news;
+    //return view('welcome');
 });

@@ -4,8 +4,8 @@
 2.  Configurez un modèle de données pour les news avec les champs 
    suivants : • Titre• Contenu • Categorie • Date_debut • Date_expiration
   
-  answer ===>  cmd : php artisan make:model News
-         ===> cod : php artisan make:model News
+2. answer ===>  cmd : php artisan make:model News
+         ===> model code : php artisan make:model News
                             <?php
 
                             namespace App\Models;
@@ -30,3 +30,96 @@
 
 
                             }
+
+3.  1   Créer un modèle de données pour une structure arborescente de 
+    catégories de news. Chaque catégorie doit avoir un nom et une relation 
+    parent/enfant pour former un arbre de catégories. (il n’est pas demandé 
+    de faire de la CRUD sur les catégories mais de concevoir un modèle de donnée 
+    et remplir la table correspondante avec l’arbre de catégories que vous 
+    trouverez annexé à cet exercice)
+
+3. answer ===>  cmd : php artisan make:model Category
+         ===> model code : php artisan make:model Category
+
+                                    <?php
+                            namespace App\Models;
+                            use Illuminate\Database\Eloquent\Factories\HasFactory;
+                            use Illuminate\Database\Eloquent\Model;
+                            class Category extends Model
+                            {
+                                use HasFactory;
+                                protected $fillable = [ 'nom',  'parent_id',  ];
+                                public function  parentCategory (){
+                                    return $this->belongsTo(Category::class,"parent_id");
+                                }
+                                public function  news (){
+                                    return $this->hasMany(News::class,"Categorie_id",);
+                                }}
+
+ 3.  2   =====> Question: remplir la table correspondante avec l’arbre de catégories que vous trouverez annexé à cet exercice
+ 
+ 3.  2  answer ===>  cmd : php artisan make:factory CategoryFactory
+        ===>  CategoryFactory code :
+                                class CategoryFactory extends Factory
+                                {
+                                    protected $model = Category::class;
+
+                                    public function definition()
+                                    {
+                                        return [
+                                            'nom' => $this->faker->unique()->word,
+                                            'parent_id' => null,
+                                        ];
+                                    }
+
+                                    public function configure()
+                                    {
+                                        return $this->afterCreating(function (Category $category) {
+                                            $childrenData = [
+                                                'Actualités' => ['Politique', 'Économie', 'Sport'],
+                                                'Divertissement' => ['Cinéma', 'Musique', 'Sorties'],
+                                                'Technologie' => [
+                                                    'Informatique' => ['Ordinateurs de bureau', 'PC portable', 'Connexion internet'],
+                                                    'Gadgets' => ['Smartphones', 'Tablettes', 'Jeux vidéo'],
+                                                ],
+                                                'Santé' => ['Médecine', 'Bien-être'],
+                                            ];
+
+                                            if (isset($childrenData[$category->nom])) {
+                                                foreach ($childrenData[$category->nom] as $childName => $subCategories) {
+                                                    // Check if the current childName is an array
+                                                    if (is_array($subCategories)) {
+
+                                                        $childCategory = Category::factory()->create([
+                                                            'nom' => $childName,
+                                                            'parent_id' => $category->id,
+                                                        ]);
+
+                                                        // Create subcategories
+                                                        foreach ($subCategories as $subChildName) {
+                                                            Category::factory()->create([
+                                                                'nom' => $subChildName,
+                                                                'parent_id' => $childCategory->id,
+                                                            ]);
+                                                        }
+                                                    }
+                                                    else {
+                                                        // category it's not an array
+                                                        Category::factory()->create([
+                                                            'nom' => $subCategories,
+                                                            'parent_id' => $category->id,
+                                                        ]);
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+ 3.  2  the end of answer  3.  2 :  php artisan db:seed --class=CategorySeeder
+
+
+4. Créer un contrôleur pour gérer les opérations CRUD sur les news (création, lecture, mise à jour, suppression).
+
+4 answer ====> cmd : php artisan make:controller NewsCrudController 
+
+
