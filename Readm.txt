@@ -1,0 +1,32 @@
+1. Créer une nouvelle application Laravel 10.
+    answer ==>  composer create-project laravel/laravel:^10.0 CRUD_de_News_en_Laravel
+
+2.  Configurez un modèle de données pour les news avec les champs 
+   suivants : • Titre• Contenu • Categorie • Date_debut • Date_expiration
+  
+  answer ===>  cmd : php artisan make:model News
+         ===> cod : php artisan make:model News
+                            <?php
+
+                            namespace App\Models;
+
+                            use Illuminate\Database\Eloquent\Factories\HasFactory;
+                            use Illuminate\Database\Eloquent\Model;
+
+                            class News extends Model
+                            {
+                                use HasFactory;
+                                protected $fillable = [
+                                    'Titre',
+                                    'Contenu',
+                                    'Categorie_id',
+                                    'Date_debut',
+                                    'Date_expiration',
+                                ];
+
+                                public function categories(){
+                                    return $this->belongsTo(Category::class,"Categorie_id");
+                                }
+
+
+                            }
