@@ -23,7 +23,7 @@ class NewsFactory extends Factory
             'Contenu' => $this->faker->paragraph,
             'Categorie_id' => $this->faker->randomElement($categoryIds),
             'Date_debut' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
-            'Date_expiration' => $this->faker->dateTimeBetween('+1 month', '+2 month'),
+            'Date_expiration' => $this->faker->dateTimeBetween('-1 month', '+2 month'),
         ];
     }
 }

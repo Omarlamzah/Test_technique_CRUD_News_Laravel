@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Support\Facades\Route;
@@ -15,8 +16,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    $category_with_parent = Category::with("childCategories")->get();;
-    return $category_with_parent;
-    //return view('welcome');
-});
+//Route::get('/',[CategoryController::class,"getArticlesRecursive"]);
