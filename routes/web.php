@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\News;
 use Illuminate\Support\Facades\Route;
 
@@ -15,8 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    $currentDate = now();
-    $news = News::where("Date_expiration", ">", $currentDate)->orderBy('id', 'desc')->get();
-    return $news;
+    $category_with_parent = Category::with("childCategories")->get();;
+    return $category_with_parent;
     //return view('welcome');
 });
