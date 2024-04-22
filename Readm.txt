@@ -260,26 +260,63 @@
 
 8. Mettez en œuvre un algorithme de recherche récursif qui parcourt l'arborescence des catégories pour trouver la catégorie demandée et  récupérer tous les articles associés à cette catégorie et à ses souscatégories.
 
-                  public  function searchArticlesRecursive($categoryId, &$articlesArray = []) {
-                        // search main category with its subcategories and articles
-                        $parentCategory = Category::where("id", "=", $categoryId)->with(["childCategories", "articles"])->first();
+                 public  function searchArticlesRecursive($categoryId, &$articlesArray = []) {
+        // search main category with its subcategories and articles
+        $parentCategory = Category::where("id", "=", $categoryId)->with(["childCategories", "news"])->first();
 
-                        // append to $articlesArray articles of main category
-                        $articlesArray = array_merge($articlesArray, $parentCategory->articles->toArray());
+        // append to $articlesArray articles of main category
+        $articlesArray = array_merge($articlesArray, $parentCategory->news->toArray());
 
-                        // loop through childCategories
-                        foreach ($parentCategory->childCategories as $category) {
-                            // call _searchArticlesRecursive again (it's a private method of the same class)
-                            $this->searchArticlesRecursive($category->id, $articlesArray);
-                        }
+        // loop through childCategories
+        foreach ($parentCategory->childCategories as $category) {
+            // call _searchArticlesRecursive again (it's a private method of the same class)
+            $this->searchArticlesRecursive($category->id, $articlesArray);
+        }
 
-                        // return the combined articles array
-                        return $articlesArray;
-                    }
+        // return the combined articles array
+        return $articlesArray;
+    }
+
 
 
 
   9. Développez une nouvelle route dans votre API pour rechercher une catégorie spécifique dans l'arborescence, en fonction de son nom, et renvoyer tous les articles associés à cette catégorie, y compris les articles des sous-catégories (n’afficher dans les résultats que les news non expirées)
+       answer ===> route Route::get('/findcategories/{nom}',[ArticlesController::class,"searchCategory"]);
+        function  searchCategory  ===>
+                                            public function searchCategory($nom)
+                                {
+                                    // Rechercher la catégorie par son nom
+                                    $category = Category::where('nom', $nom)->first();
+
+                                    if (!$category) {
+                                        return response()->json(['error' => 'Category not found'], 404);
+                                    }
+
+                                    // Récupérer tous les articles associés à cette catégorie et à ses sous-catégories
+                                    $articlesArray = $this->searchArticlesRecursive($category->id);
+                                //  return $articlesArray;
+                                    // Filtrer les articles pour ne conserver que ceux qui ne sont pas expirés
+                                    $validArticles = [];
+
+                                    foreach ($articlesArray as $article) {
+                                        // Vérifier la date d'expiration de l'article
+                                        if ($article['Date_expiration'] > now()) {
+                                            // Ajouter l'article au tableau des articles valides
+                                            $validArticles[] = $article;
+                                        }
+                                    }
+
+                                    // Retourner les articles valides en tant que réponse
+                                    return response()->json(['articles' => $validArticles], 200);
+                                }
 
 
+10. Utilisez des outils comme Postman pour tester les fonctionnalités de votre API en effectuant des requêtes POST, PUT, GET et DELETE pour ajouter, mettre à jour, récupérer et supprimer des news.
 
+  ===> import this link in your Postman 
+          " i am remove it because repo is public "
+
+
+  11. Assurez-vous que l'API répond aux codes d'état HTTP appropriés pour chaque opération (par exemple, 200 pour OK, 201 pour la création, 204 pour la suppression, 400 pour les erreurs de demande, etc.)
+    ===> those status code  used in the code
+    
