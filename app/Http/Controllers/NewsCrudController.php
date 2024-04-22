@@ -78,7 +78,7 @@ class NewsCrudController extends Controller
             }
             $news->delete();
             // Return a success message with 204 but 204 what i see in test its not good to send this code 204 its mean no content but user should know status her request
-            return response()->json(['message' => 'News deleted successfully'], 204);
+            return response()->json(['message' => 'News deleted successfully'], 200); // 200 inseted of 204 to a void no content response
         } catch (\Exception $e) {
             // Handle any unexpected exceptions
             return response()->json(['message' => 'Failed to delete news item'], 500);
